@@ -9,9 +9,10 @@
 
       # ── Identity ───────────────────────────────────────────────────────────
       user = {
-        name  = "dieferomanoski";
-        # email is set locally in ~/.gitconfig.local (not committed — keep it private)
-        # Run once: git config --global user.email "your@email.com"
+        # Set name and email locally — not committed to the public repo.
+        # Run once after cloning:
+        #   git config --global user.name  "Your Name"
+        #   git config --global user.email "you@example.com"
       };
 
       # ── Core settings ──────────────────────────────────────────────────────

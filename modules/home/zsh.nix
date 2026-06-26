@@ -1,4 +1,4 @@
-{ pkgs, hostname, lib, ... }:
+{ pkgs, lib, hostname, username, ... }:
 
 {
   programs.zsh = {
@@ -57,9 +57,11 @@
       gds   = "git diff --staged";
       glog  = "git log --oneline --graph --decorate";
 
-      # Nix / dotfiles — hostname baked in at build time from flake.nix
-      rebuild = "darwin-rebuild switch --flake ~/.config/dotfiles#${hostname}";
-      update  = "nix flake update ~/.config/dotfiles";
+      # Nix / dotfiles — command differs per OS, picked at build time
+      rebuild = if pkgs.stdenv.isDarwin
+        then "darwin-rebuild switch --flake ~/.config/dotfiles#${hostname}"
+        else "home-manager switch --flake ~/.config/dotfiles#${username}";
+      update = "nix flake update ~/.config/dotfiles";
 
       # Navigation
       ".."  = "cd ..";

@@ -1,56 +1,39 @@
-{ pkgs, lib, username, ... }:
+{ pkgs, lib, username, features, ... }:
 
+# Core is always loaded. Optional modules are gated by feature flags in flake.nix.
 {
-  imports = [
-    ./wezterm.nix
-    ./zsh.nix
-    ./git.nix
-    ./starship.nix
-    ./neovim.nix
-  ];
+  imports =
+    # ── Core (always loaded — works on macOS, Linux, WSL2) ─────────────────
+    [ ./git.nix ./zsh.nix ./starship.nix
+      ./optional/wezterm.nix
+      ./optional/neovim.nix ]
+    # ── Optional (controlled by feature flags in flake.nix) ────────────────
+    ++ lib.optional features.devTools ./optional/dev.nix;
 
-  # ── User-level packages ────────────────────────────────────────────────────
-  # CLI tools installed for your user only.
-  # Find packages at: https://search.nixos.org/packages
+  # ── Core CLI packages (small, fast, work everywhere) ─────────────────────
   home.packages = with pkgs; [
-    # Shell utilities
-    eza          # modern `ls` replacement (shows icons, colors, tree)
-    bat          # modern `cat` with syntax highlighting
-    fd           # fast `find` replacement
-    ripgrep      # fast `grep` replacement (used by neovim too)
-    fzf          # fuzzy finder — CTRL+R for history, CTRL+T for files
-    zoxide       # smarter `cd` — jump to frecent directories with `z`
-    jq           # JSON processor
-    htop         # process monitor
-
-    # Git extras
-    delta        # beautiful git diffs (configured in git.nix)
-    gh           # GitHub CLI — create PRs, issues from terminal
-
-    # Fonts (Nerd Font for icons in WezTerm / Starship)
-    # nixpkgs-unstable split nerdfonts into individual packages under nerd-fonts.*
+    eza        # better ls
+    bat        # better cat
+    fd         # better find
+    ripgrep    # better grep
+    fzf        # fuzzy finder
+    zoxide     # smarter cd
+    jq         # JSON processor
+    htop       # process monitor
+    delta      # beautiful git diffs
+    gh         # GitHub CLI
     nerd-fonts.jetbrains-mono
-
-    # Python
-    python3          # latest Python 3 (python3 / pip3 in your shell)
-
-    # Node version manager — installs/switches Node versions with `nvm install`
-    nvm
   ];
 
-  # ── XDG base directories ───────────────────────────────────────────────────
   xdg.enable = true;
 
-  # ── Session variables ──────────────────────────────────────────────────────
   home.sessionVariables = {
-    EDITOR  = "nvim";
-    VISUAL  = "nvim";
-    PAGER   = "bat --plain";
-    MANPAGER = "sh -c 'col -bx | bat -l man -p'";  # man pages with color
+    EDITOR   = "nvim";
+    VISUAL   = "nvim";
+    PAGER    = "bat --plain";
+    MANPAGER = "sh -c 'col -bx | bat -l man -p'";
   };
 
-  # ── home-manager required settings ────────────────────────────────────────
-  # username flows in from flake.nix — never hardcoded here
   home.username      = username;
   home.homeDirectory = lib.mkForce (
     if pkgs.stdenv.isDarwin

@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 set -e
 
-# ── ktt's dotfiles install script ───────────────────────────────────────────
+# ── dotfiles install script ─────────────────────────────────────────────────
 # Installs Nix, nix-darwin, and applies the full configuration.
 # Safe to re-run — each step checks before acting.
 
 DOTFILES_DIR="$HOME/.config/dotfiles"
-# Read hostname from the system — must match what's in flake.nix
-HOSTNAME="$(scutil --get ComputerName)"
+# Read hostname from the system — must match flake.nix
+HOSTNAME="$(scutil --get ComputerName 2>/dev/null || hostname)"
 
 echo ""
 echo "╭──────────────────────────────────────────╮"
-echo "│   ktt dotfiles installer                 │"
+echo "│   dotfiles installer                     │"
 echo "╰──────────────────────────────────────────╯"
 echo ""
 
@@ -57,7 +57,7 @@ echo "→ Setting up dotfiles..."
 if [ ! -d "$DOTFILES_DIR" ]; then
   echo "  Cloning dotfiles..."
   # Replace this URL with your GitHub repo once you push it
-  # git clone https://github.com/ktt/dotfiles.git "$DOTFILES_DIR"
+  # git clone https://github.com/YOUR_USERNAME/dotfiles.git "$DOTFILES_DIR"
   # For now, copy from current directory:
   mkdir -p "$HOME/.config"
   cp -r "$(dirname "$0")" "$DOTFILES_DIR"
